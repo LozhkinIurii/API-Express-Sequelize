@@ -19,22 +19,37 @@ app.get('/', (req, res) => {
     res.status(302).send('Hello World!\n');
 })
 
-// https://expressjs.com/en/guide/routing.html#route-parameters
-// app.get('/search/last/:last', (req, res) => {
-//     res.setHeader('Content-Type', 'application/json');
-//     res.status(302).send(`${JSON.stringify(req.params)}\n`);
-// })
+app.get('/get', (req, res) => {
+    let q = url.parse(req.url, true);
+    const params = Object.keys(q.query);
+    const parameter = params[0];
+    const columnValue = req.query[parameter];
+    const sql = `SELECT * FROM person WHERE LOWER(last) = 'Peterson';`;
+    console.log(columnValue);
+    db.all(sql, (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ data: rows }); // Send the result as JSON
+    });
+});
+
 
 app.get('/api/users', (req, res) => {
     let sql = 'SELECT * FROM person;'
-    // res.setHeader('Content-Type', 'application/json');
-    // res.status(302).send(`${JSON.stringify(req.query)}\n`);
     db.all(sql, (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
         console.log("--- ALL ----------\n")
         console.log(JSON.stringify(rows));
+        res.json({ data: rows }); // Send the result as JSON
     });
-    res.end();
 });
+
+
 
 app.use((req, res) => {	// Default: any other request
     res.setHeader('Content-Type', 'application/json');
