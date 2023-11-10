@@ -22,7 +22,7 @@ const HTTP_STATUS_NOT_EXIST = 404;
 const INTERNAL_SERVER_ERROR = 500;
 
 const greetingMessage = {
-  "message": "Hello World!",
+    "message": "Hello World!",
 };
 
 
@@ -36,7 +36,7 @@ app.get('/get', (req, res) => {
     const params = Object.keys(q.query);
     const parameter = params[0];
     const columnValue = req.query[parameter];
-    const sql = `SELECT * FROM person WHERE ${parameter} = ?;`;
+    const sql = `SELECT * FROM users WHERE ${parameter} = ?;`;
     console.log(columnValue);
     db.all(sql, [columnValue], (err, rows) => {
         if (err) {
@@ -49,7 +49,7 @@ app.get('/get', (req, res) => {
 
 
 app.get('/api/users', (req, res) => {
-    let sql = 'SELECT * FROM person;'
+    let sql = 'SELECT * FROM users;'
     db.all(sql, (err, rows) => {
         if (err) {
             res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
@@ -74,32 +74,39 @@ app.listen(port, () => {
 
 
 
-// db.serialize(() => {
-//     db.run("CREATE TABLE IF NOT EXISTS person (id INTEGER UNIQUE NOT NULL PRIMARY KEY, first VARCHAR(1000), last VARCHAR(1000))");
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS users
+            (
+            id INTEGER UNIQUE NOT NULL
+            , first VARCHAR(1000)
+            , last VARCHAR(1000)
+            , CONSTRAINT users__id_pk
+              PRIMARY KEY (id)
+            , CHECK (LENGTH(first) > 1)
+            , CHECK (LENGTH(last) > 1)
+            )`);
 
-//     var stmt = db.prepare("INSERT INTO person (id, first, last) VALUES (NULL, ?, ?)");
-//     let count = 0;
+    db.run(`CREATE INDEX IF NOT EXISTS users__last_index
+            ON users (last);`)
 
-//     for (var i = 0; i < 5; i++) {
-//         stmt.run("John" + count++, "Peterson");
-//     }
+    var stmt = db.prepare(`INSERT INTO users
+                            (id, first, last)
+                        VALUES
+                            (NULL, ?, ?)`);
+    let count = 0;
 
-//     stmt.finalize();
+    for (var i = 0; i < 5; i++) {
+        stmt.run("John" + count++, "Peterson");
+    }
 
-//     db.each("SELECT id, first, last FROM person", (err, row) => {
-//         if (err)
-//             console.log(err)
-//         console.log(row.id + ": " + row.first + " " + row.last);
-//     });
+    stmt.finalize();
 
-//     // Print the rows as JSON
-//     // let sql = 'SELECT * FROM person;'
-//     // db.all(sql, (err, rows) => {
-//     //   console.log("--- ALL ----------\n")
-//     //   console.log(JSON.stringify(rows));
-//     // });
-
-// });
+    db.each("SELECT id, first, last FROM users", (err, row) => {
+        if (err)
+            console.log(err)
+        console.log(row.id + ": " + row.first + " " + row.last);
+    });
+});
 
 
-// db.close();
+db.close();
