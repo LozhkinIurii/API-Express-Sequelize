@@ -24,7 +24,7 @@ app.get('/get', (req, res) => {
     const params = Object.keys(q.query);
     const parameter = params[0];
     const columnValue = req.query[parameter];
-    const sql = `SELECT * FROM person WHERE LOWER(${parameter}) = ?;`;
+    const sql = `SELECT * FROM person WHERE ${parameter} = ?;`;
     console.log(columnValue);
     db.all(sql, [columnValue], (err, rows) => {
         if (err) {
