@@ -31,13 +31,25 @@ app.get('/', (req, res) => {
     res.status(HTTP_STATUS_BADREQ).json(greetingMessage);
 })
 
+
+app.get('/api/users', (req, res) => {
+    let sql = 'SELECT * FROM users;'
+    db.all(sql, (err, rows) => {
+        if (err) {
+            res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
+            return;
+        }
+        res.status(HTTP_STATUS_OK).json({ data: rows }); // Send the result as JSON
+    });
+});
+
+
 app.get('/get', (req, res) => {
     let q = url.parse(req.url, true);
     const params = Object.keys(q.query);
     const parameter = params[0];
     const columnValue = req.query[parameter];
     const sql = `SELECT * FROM users WHERE ${parameter} = ?;`;
-    console.log(columnValue);
     db.all(sql, [columnValue], (err, rows) => {
         if (err) {
             res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
@@ -48,16 +60,24 @@ app.get('/get', (req, res) => {
 });
 
 
-app.get('/api/users', (req, res) => {
-    let sql = 'SELECT * FROM users;'
-    db.all(sql, (err, rows) => {
+app.post('/add', (req, res) => {
+    // let q = url.parse(req.url, true);
+    // const params = Object.keys(q.query);
+    const [parameter1, parameter2] = req.body;
+    const paramValue1 = req.query[params[0]];
+    const paramValue2 = req.query[params[1]];
+    console.log(parameter1, parameter2, paramValue1, paramValue2);
+    const sql = `INSERT INTO users
+                    (${parameter1}, ${parameter2})
+                VALUES
+                    (?, ?);`;
+
+    db.all(sql, [paramValue1, paramValue2], (err, rows) => {
         if (err) {
             res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
             return;
         }
-        console.log("--- ALL ----------\n")
-        console.log(JSON.stringify(rows));
-        res.json({ data: rows }); // Send the result as JSON
+        res.json({ message: `Successfully added ${paramValue1} ${paramValue2}` }); // Send the result as JSON
     });
 });
 
@@ -74,39 +94,39 @@ app.listen(port, () => {
 
 
 
-db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS users
-            (
-            id INTEGER UNIQUE NOT NULL
-            , first VARCHAR(1000)
-            , last VARCHAR(1000)
-            , CONSTRAINT users__id_pk
-              PRIMARY KEY (id)
-            , CHECK (LENGTH(first) > 1)
-            , CHECK (LENGTH(last) > 1)
-            )`);
+// db.serialize(() => {
+//     db.run(`CREATE TABLE IF NOT EXISTS users
+//             (
+//             id INTEGER UNIQUE NOT NULL
+//             , first VARCHAR(1000)
+//             , last VARCHAR(1000)
+//             , CONSTRAINT users__id_pk
+//               PRIMARY KEY (id)
+//             , CHECK (LENGTH(first) > 1)
+//             , CHECK (LENGTH(last) > 1)
+//             );
 
-    db.run(`CREATE INDEX IF NOT EXISTS users__last_index
-            ON users (last);`)
+//             CREATE INDEX IF NOT EXISTS users__last_index
+//             ON users (last);`);
 
-    var stmt = db.prepare(`INSERT INTO users
-                            (id, first, last)
-                        VALUES
-                            (NULL, ?, ?)`);
-    let count = 0;
+//     var stmt = db.prepare(`INSERT INTO users
+//                             (id, first, last)
+//                         VALUES
+//                             (NULL, ?, ?)`);
+//     let count = 0;
 
-    for (var i = 0; i < 5; i++) {
-        stmt.run("John" + count++, "Peterson");
-    }
+//     for (var i = 0; i < 5; i++) {
+//         stmt.run("John" + count++, "Peterson");
+//     }
 
-    stmt.finalize();
+//     stmt.finalize();
 
-    db.each("SELECT id, first, last FROM users", (err, row) => {
-        if (err)
-            console.log(err)
-        console.log(row.id + ": " + row.first + " " + row.last);
-    });
-});
+//     db.each("SELECT id, first, last FROM users", (err, row) => {
+//         if (err)
+//             console.log(err)
+//         console.log(row.id + ": " + row.first + " " + row.last);
+//     });
+// });
 
 
-db.close();
+// db.close();
