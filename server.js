@@ -1,3 +1,10 @@
+// FILE: server.js
+//
+// curl --silent --include "http://localhost:8080/"
+// curl --silent --include "http://localhost:8080/search/last/Donovan"
+// curl --silent --include "http://localhost:8080/query?first=John&last=Doe"
+
+
 var express = require("express")
 var app = express()
 var url = require('url')
@@ -8,15 +15,20 @@ var db = new sqlite3.Database('example.db');
 var md5 = require("md5");
 var hostname = "localhost"
 var port = 8000
-// FILE: server.js
-//
-// curl --silent --include "http://localhost:8080/"
-// curl --silent --include "http://localhost:8080/search/last/Donovan"
-// curl --silent --include "http://localhost:8080/query?first=John&last=Doe"
+
+const HTTP_STATUS_OK = 200;
+const HTTP_STATUS_BADREQ = 400;  // NOK
+const HTTP_STATUS_NOT_EXIST = 404;
+const INTERNAL_SERVER_ERROR = 500;
+
+const greetingMessage = {
+  "message": "Hello World!",
+};
+
 
 app.get('/', (req, res) => {
     res.setHeader('Content-Type', 'text/plain');
-    res.status(302).send('Hello World!\n');
+    res.status(HTTP_STATUS_BADREQ).json(greetingMessage);
 })
 
 app.get('/get', (req, res) => {
@@ -28,7 +40,7 @@ app.get('/get', (req, res) => {
     console.log(columnValue);
     db.all(sql, [columnValue], (err, rows) => {
         if (err) {
-            res.status(500).json({ error: err.message });
+            res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
             return;
         }
         res.json({ data: rows }); // Send the result as JSON
@@ -40,7 +52,7 @@ app.get('/api/users', (req, res) => {
     let sql = 'SELECT * FROM person;'
     db.all(sql, (err, rows) => {
         if (err) {
-            res.status(500).json({ error: err.message });
+            res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
             return;
         }
         console.log("--- ALL ----------\n")
@@ -53,7 +65,7 @@ app.get('/api/users', (req, res) => {
 
 app.use((req, res) => {	// Default: any other request
     res.setHeader('Content-Type', 'application/json');
-    res.status(404).json({});
+    res.status(HTTP_STATUS_NOT_EXIST).json({});
 });
 
 app.listen(port, () => {
