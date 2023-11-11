@@ -26,6 +26,8 @@ const greetingMessage = {
 };
 
 
+app.use(express.json());
+
 app.get('/', (req, res) => {
     res.setHeader('Content-Type', 'text/plain');
     res.status(HTTP_STATUS_BADREQ).json(greetingMessage);
@@ -61,25 +63,32 @@ app.get('/get', (req, res) => {
 
 
 app.post('/add', (req, res) => {
-    // let q = url.parse(req.url, true);
-    // const params = Object.keys(q.query);
-    const [parameter1, parameter2] = req.body;
-    const paramValue1 = req.query[params[0]];
-    const paramValue2 = req.query[params[1]];
-    console.log(parameter1, parameter2, paramValue1, paramValue2);
-    const sql = `INSERT INTO users
-                    (${parameter1}, ${parameter2})
-                VALUES
-                    (?, ?);`;
+    const data = req.body;
+    console.log(data);
 
-    db.all(sql, [paramValue1, paramValue2], (err, rows) => {
-        if (err) {
-            res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
-            return;
-        }
-        res.json({ message: `Successfully added ${paramValue1} ${paramValue2}` }); // Send the result as JSON
-    });
+    if (!data) {
+        res.status(HTTP_STATUS_BADREQ).json({ error: "Missing required parameters" });
+        return;
+    } else {
+        const columns = Object.keys(data);
+        console.log(columns);
+        const values = Object.values(data);
+        console.log(values);
+        const columnPlaceholders = columns.map(() => '?').join(', ');
+
+        const sql = `INSERT INTO users (${columns.join(', ')}) VALUES (${columnPlaceholders});`;
+
+        // db.run(sql, values, function (err) {
+        //     if (err) {
+        //         res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
+        //         return;
+        //     }
+
+        //     res.status(HTTP_STATUS_OK).json({ message: 'User added successfully', id: this.lastID });
+        // });
+    }
 });
+
 
 
 
