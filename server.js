@@ -46,20 +46,25 @@ app.get('/api/users', (req, res) => {
 });
 
 
-app.get('/get', (req, res) => {
-    let q = url.parse(req.url, true);
-    const params = Object.keys(q.query);
-    const parameter = params[0];
-    const columnValue = req.query[parameter];
-    const sql = `SELECT * FROM users WHERE ${parameter} = ?;`;
-    db.all(sql, [columnValue], (err, rows) => {
-        if (err) {
-            res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
-            return;
-        }
-        res.json({ data: rows }); // Send the result as JSON
+app.get('/search', (req, res) => {
+    const params = Object.entries(req.query);
+    console.log(params);
+    let sql = 'SELECT * FROM users WHERE 1';
+    let values = [];
+    params.forEach(([key, value]) => {
+        sql += ` AND ${key} = ?`;
+        values.push(value);
     });
-});
+
+    db.all(sql, values, (err, rows) => {
+      if (err) {
+        res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
+        return;
+      }
+
+      res.json({ users: rows });
+    });
+  });
 
 
 app.post('/add', (req, res) => {
@@ -78,14 +83,14 @@ app.post('/add', (req, res) => {
 
         const sql = `INSERT INTO users (${columns.join(', ')}) VALUES (${columnPlaceholders});`;
 
-        // db.run(sql, values, function (err) {
-        //     if (err) {
-        //         res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
-        //         return;
-        //     }
+        db.run(sql, values, function (err) {
+            if (err) {
+                res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
+                return;
+            }
 
-        //     res.status(HTTP_STATUS_OK).json({ message: 'User added successfully', id: this.lastID });
-        // });
+            res.status(HTTP_STATUS_OK).json({ message: 'User added successfully', id: this.lastID });
+        });
     }
 });
 
