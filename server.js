@@ -4,7 +4,7 @@
 // curl --silent --include "http://localhost:8080/search/last/Donovan"
 // curl --silent --include "http://localhost:8080/query?first=John&last=Doe"
 
-const { Sequelize } = require('sequelize');
+const { Sequelize, Model, DataTypes } = require('sequelize');
 const express = require("express")
 const app = express()
 const sqlite3 = require('sqlite3').verbose();
@@ -23,6 +23,43 @@ const greetingMessage = {
 };
 
 
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './example.db'
+});
+
+
+class User extends Model { }
+User.init({
+    // Model attributes are defined here
+    id: {
+        type: DataTypes.INTEGER,
+        unique: true,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    first: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    last: {
+        type: DataTypes.STRING,
+        allowNull: false
+        // allowNull defaults to true
+    }
+}, {
+    sequelize,
+    tableName: 'users',
+    timestamps: false
+});
+
+
+// Create table if not exists
+(async () => {
+    await sequelize.sync();
+})();
+
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -30,71 +67,43 @@ app.get('/', (req, res) => {
     res.status(HTTP_STATUS_BADREQ).json(greetingMessage);
 })
 
+app.get('/api/users', async (req, res) => {
+    try {
+        const users = await User.findAll();
+        res.status(HTTP_STATUS_OK).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
 
-app.get('/api/users', (req, res) => {
-    let sql = 'SELECT * FROM users;'
-    db.all(sql, (err, rows) => {
-        if (err) {
-            res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
-            return;
-        }
-        res.status(HTTP_STATUS_OK).json({ data: rows }); // Send the result as JSON
-    });
 });
 
 
 app.get('/search', (req, res) => {
     const params = Object.entries(req.query);
-    console.log(params);
-    let sql = 'SELECT * FROM users WHERE 1';
     let values = [];
     params.forEach(([key, value]) => {
-        sql += ` AND ${key} = ?`;
         values.push(value);
     });
-
-    db.all(sql, values, (err, rows) => {
-      if (err) {
-        res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
-        return;
-      }
-
-      res.status(HTTP_STATUS_OK).json({ users: rows });
-    });
-  });
-
-
-app.post('/add', (req, res) => {
-    const data = req.body;
-    console.log(data);
-
-    if (!data) {
-        res.status(HTTP_STATUS_BADREQ).json({ error: "Missing required parameters" });
-        return;
-    } else {
-        const columns = Object.keys(data);
-        console.log(columns);
-        const values = Object.values(data);
-        console.log(values);
-        const columnPlaceholders = columns.map(() => '?').join(', ');
-
-        const sql = `INSERT INTO users (${columns.join(', ')}) VALUES (${columnPlaceholders});`;
-
-        db.run(sql, values, function (err) {
-            if (err) {
-                res.status(INTERNAL_SERVER_ERROR).json({ error: err.message });
-                return;
-            }
-
-            res.status(HTTP_STATUS_CREATED).json({ message: 'User added successfully', id: this.lastID });
-        });
-    }
 });
 
 
+app.post('/add', async (req, res) => {
+    try {
+        const newUser = await User.create(req.body);
+        res.status(HTTP_STATUS_CREATED).json(newUser);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.patch
 
 
-app.use((req, res) => {	// Default: any other request
+
+
+app.use((req, res) => {	    // Any other request
     res.setHeader('Content-Type', 'application/json');
     res.status(HTTP_STATUS_NOT_EXIST).json({});
 });
@@ -105,39 +114,3 @@ app.listen(port, () => {
 
 
 
-// db.serialize(() => {
-//     db.run(`CREATE TABLE IF NOT EXISTS users
-//             (
-//             id INTEGER UNIQUE NOT NULL
-//             , first VARCHAR(1000) NOT NULL
-//             , last VARCHAR(1000) NOT NULL
-//             , CONSTRAINT users__id_pk
-//               PRIMARY KEY (id)
-//             , CHECK (LENGTH(first) > 1)
-//             , CHECK (LENGTH(last) > 1)
-//             );
-
-//             CREATE INDEX IF NOT EXISTS users__last_index
-//             ON users (last);`);
-
-//     var stmt = db.prepare(`INSERT INTO users
-//                             (id, first, last)
-//                         VALUES
-//                             (NULL, ?, ?)`);
-//     let count = 0;
-
-//     for (var i = 0; i < 5; i++) {
-//         stmt.run("John" + count++, "Peterson");
-//     }
-
-//     stmt.finalize();
-
-//     db.each("SELECT id, first, last FROM users", (err, row) => {
-//         if (err)
-//             console.log(err)
-//         console.log(row.id + ": " + row.first + " " + row.last);
-//     });
-// });
-
-
-// db.close();
