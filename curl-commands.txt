@@ -5,4 +5,4 @@ GET (search):
 curl "http://localhost:8000/search?first=some&last=thing"
 
 POST:
-curl -d '{"first": "Homer"}' -H "Content-Type: application/json" -X POST http://localhost:8000/add
+curl -d '{"first": "Homer", "last": "Simpson"}' -H "Content-Type: application/json" -X POST http://localhost:8000/add

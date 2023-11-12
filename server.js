@@ -7,16 +7,13 @@
 
 var express = require("express")
 var app = express()
-var url = require('url')
-var qs = require('querystring');
-var util = require('util')
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('example.db');
-var md5 = require("md5");
 var hostname = "localhost"
 var port = 8000
 
 const HTTP_STATUS_OK = 200;
+const HTTP_STATUS_CREATED = 201;
 const HTTP_STATUS_BADREQ = 400;  // NOK
 const HTTP_STATUS_NOT_EXIST = 404;
 const INTERNAL_SERVER_ERROR = 500;
@@ -62,7 +59,7 @@ app.get('/search', (req, res) => {
         return;
       }
 
-      res.json({ users: rows });
+      res.status(HTTP_STATUS_OK).json({ users: rows });
     });
   });
 
@@ -89,7 +86,7 @@ app.post('/add', (req, res) => {
                 return;
             }
 
-            res.status(HTTP_STATUS_OK).json({ message: 'User added successfully', id: this.lastID });
+            res.status(HTTP_STATUS_CREATED).json({ message: 'User added successfully', id: this.lastID });
         });
     }
 });
@@ -112,8 +109,8 @@ app.listen(port, () => {
 //     db.run(`CREATE TABLE IF NOT EXISTS users
 //             (
 //             id INTEGER UNIQUE NOT NULL
-//             , first VARCHAR(1000)
-//             , last VARCHAR(1000)
+//             , first VARCHAR(1000) NOT NULL
+//             , last VARCHAR(1000) NOT NULL
 //             , CONSTRAINT users__id_pk
 //               PRIMARY KEY (id)
 //             , CHECK (LENGTH(first) > 1)
