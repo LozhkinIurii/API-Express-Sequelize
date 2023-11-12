@@ -1,2 +1,3 @@
 searching with req.params (search/:last) or req.query (search?last=...);
 url in "" gives all params when req.query and only first when no "".
+Sequelize searching with multiple criterias: how to recognize AND/OR in url query

@@ -4,24 +4,21 @@
 // curl --silent --include "http://localhost:8080/search/last/Donovan"
 // curl --silent --include "http://localhost:8080/query?first=John&last=Doe"
 
-const { Sequelize, Model, DataTypes } = require('sequelize');
-const express = require("express")
-const app = express()
+const { Sequelize, Model, DataTypes, Op } = require('sequelize');
+const express = require("express");
+const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('example.db');
-const hostname = "localhost"
-const port = 8000
-
+const hostname = "localhost";
+const port = 8000;
 const HTTP_STATUS_OK = 200;
 const HTTP_STATUS_CREATED = 201;
 const HTTP_STATUS_BADREQ = 400;  // NOK
 const HTTP_STATUS_NOT_EXIST = 404;
 const INTERNAL_SERVER_ERROR = 500;
-
 const greetingMessage = {
     "message": "Hello World!",
 };
-
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
@@ -31,7 +28,6 @@ const sequelize = new Sequelize({
 
 class User extends Model { }
 User.init({
-    // Model attributes are defined here
     id: {
         type: DataTypes.INTEGER,
         unique: true,
@@ -45,7 +41,6 @@ User.init({
     last: {
         type: DataTypes.STRING,
         allowNull: false
-        // allowNull defaults to true
     }
 }, {
     sequelize,
@@ -75,16 +70,26 @@ app.get('/api/users', async (req, res) => {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
-
 });
 
 
-app.get('/search', (req, res) => {
-    const params = Object.entries(req.query);
-    let values = [];
-    params.forEach(([key, value]) => {
-        values.push(value);
-    });
+app.get('/search', async (req, res) => {
+    // const params = Object.entries(req.query);
+    // const keys = Object.keys(req.query);
+    // const values = Object.values(req.query);
+    const conditions = Object.entries(req.query).map(([key, value]) => ({ [key]: value }));   // Array of objects, each object has one key/value pair
+    try {
+        const users = await User.findAll({
+            // attributes: [...keys],   // fields (columns to show)
+            where: {
+                [Op.and]: conditions
+            }
+        });
+        res.status(HTTP_STATUS_OK).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
 });
 
 
