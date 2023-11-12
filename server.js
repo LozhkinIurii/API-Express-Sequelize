@@ -4,13 +4,13 @@
 // curl --silent --include "http://localhost:8080/search/last/Donovan"
 // curl --silent --include "http://localhost:8080/query?first=John&last=Doe"
 
-
-var express = require("express")
-var app = express()
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('example.db');
-var hostname = "localhost"
-var port = 8000
+const { Sequelize } = require('sequelize');
+const express = require("express")
+const app = express()
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('example.db');
+const hostname = "localhost"
+const port = 8000
 
 const HTTP_STATUS_OK = 200;
 const HTTP_STATUS_CREATED = 201;
