@@ -49,6 +49,23 @@ User.init({
 });
 
 
+const Phone = sequelize.define('Phone', {
+    id: {
+        type: DataTypes.INTEGER,
+        unique: true,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
+}, {
+    sequelize,
+    tableName: 'phones',
+    timestamps: false
+});
+
 // Create table if not exists
 (async () => {
     await sequelize.sync();
