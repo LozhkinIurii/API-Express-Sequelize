@@ -120,7 +120,20 @@ app.post('/add', async (req, res) => {
     }
 });
 
-app.patch
+app.patch('/update', async (req, res) => {
+    try {
+        const id = req.body.id;
+        await User.update({ lastName: "Doe" }, {
+            where: {
+                id: id
+            }
+        });
+        res.status(HTTP_STATUS_OK).json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+})
 
 
 

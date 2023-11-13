@@ -1,4 +1,8 @@
 searching with req.params (search/:last) or req.query (search?last=...);
 url in "" gives all params when req.query and only first when no "".
-Sequelize searching with multiple criterias: how to recognize AND/OR in url query
+Sequelize searching with multiple criterias: how to recognize AND/OR in url query or should I use different routes?
+how to make queries for each possible situation? (seems impossible)
 domain constraint checks for Sequelize.
+are we using only url queries?
+for updating PUT or PATCH?
+PATCH with req.params or (/:id) or not?
