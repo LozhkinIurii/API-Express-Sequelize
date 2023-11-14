@@ -15,7 +15,7 @@ RETURNED FILES
 
 	Project files are returned in project/ directory. See homepage.
 
-PRESENTATION INSTRUCTIOS
+PRESENTATION INSTRUCTIONS
 
 	1. About 10 minutes
 	2. Powepoint

@@ -123,6 +123,7 @@ app.post('/add', async (req, res) => {
 app.patch('/update', async (req, res) => {
     try {
         const id = req.body.id;
+        const columns = Object.keys(req.body);
         await User.update({ lastName: "Doe" }, {
             where: {
                 id: id
