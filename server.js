@@ -90,17 +90,17 @@ app.get('/api/users', async (req, res) => {
 });
 
 
-app.get('/search', async (req, res) => {
+app.get('/api/users/search', async (req, res) => {
     // const params = Object.entries(req.query);
     // const keys = Object.keys(req.query);
     // const values = Object.values(req.query);
     const conditions = Object.entries(req.query).map(([key, value]) => ({ [key]: value }));   // Array of objects, each object has one key/value pair
+    console.log(conditions);
+    console.log(req.query);
     try {
         const users = await User.findAll({
             // attributes: [...keys],   // fields (columns to show)
-            where: {
-                [Op.and]: conditions
-            }
+            where: req.query
         });
         res.status(HTTP_STATUS_OK).json(users);
     } catch (error) {
@@ -110,7 +110,7 @@ app.get('/search', async (req, res) => {
 });
 
 
-app.post('/add', async (req, res) => {
+app.post('/api/users', async (req, res) => {
     try {
         const newUser = await User.create(req.body);
         res.status(HTTP_STATUS_CREATED).json(newUser);
@@ -120,13 +120,12 @@ app.post('/add', async (req, res) => {
     }
 });
 
-app.patch('/update', async (req, res) => {
+app.patch('/api/users/:id', async (req, res) => {
     try {
-        const id = req.body.id;
-        const columns = Object.keys(req.body);
-        await User.update({ lastName: "Doe" }, {
+        const urlId = req.params.id;
+        await User.update(req.body, {
             where: {
-                id: id
+                id: urlId
             }
         });
         res.status(HTTP_STATUS_OK).json(updatedUser);
