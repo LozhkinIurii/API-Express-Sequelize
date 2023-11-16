@@ -50,12 +50,6 @@ User.init({
 
 
 const Phone = sequelize.define('Phone', {
-    id: {
-        type: DataTypes.INTEGER,
-        unique: true,
-        autoIncrement: true,
-        primaryKey: true
-    },
     phone: {
         type: DataTypes.STRING,
         allowNull: true
@@ -65,6 +59,10 @@ const Phone = sequelize.define('Phone', {
     tableName: 'phones',
     timestamps: false
 });
+
+
+User.hasMany(Phone);
+Phone.belongsTo(User);
 
 // Create table if not exists
 (async () => {
