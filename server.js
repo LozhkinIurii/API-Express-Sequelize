@@ -84,7 +84,24 @@ app.get('/', (req, res) => {
 app.get('/api/users', async (req, res) => {
     try {
         const users = await User.findAll();
+        if (!users) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Not found' });
+        }
         res.status(HTTP_STATUS_OK).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.get('/api/phones', async (req, res) => {
+    try {
+        const phones = await Phone.findAll();
+        if (!phones) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Not found' });
+        }
+        res.status(HTTP_STATUS_OK).json(phones);
     } catch (error) {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
@@ -114,7 +131,42 @@ app.get('/api/users/search', async (req, res) => {
             where: whereConditions,
             include: includeModel
         });
+        if (!users) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Not found' });
+        }
         res.status(HTTP_STATUS_OK).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.get('/api/phones/search', async (req, res) => {
+    const { op, include, model, ...conditions } = req.query;
+    try {
+        let whereConditions;
+        if (op === 'and') {
+            whereConditions = { [Op.and]: conditions };
+        } else if (op === 'or') {
+            whereConditions = { [Op.or]: conditions };
+        } else {
+            whereConditions = conditions;
+        }
+
+        let includeModel = undefined;
+        if (include === 'true' && model) {
+            includeModel = { model: sequelize.model(model) }
+        }
+
+        const phones = await Phone.findAll({
+            where: whereConditions,
+            include: includeModel
+        });
+        if (!phones) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Not found' });
+        }
+        res.status(HTTP_STATUS_OK).json(phones);
     } catch (error) {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
@@ -124,12 +176,11 @@ app.get('/api/users/search', async (req, res) => {
 
 app.get('/api/users/:id', async (req, res) => {
     try {
-        const users = await User.findAll({
-            where: {
-                id: req.params.id
-            }
-        });
-        res.status(HTTP_STATUS_OK).json(users);
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User not found' });
+        }
+        res.status(HTTP_STATUS_OK).json(user);
     } catch (error) {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
@@ -137,15 +188,21 @@ app.get('/api/users/:id', async (req, res) => {
 });
 
 
-app.get('/api/phones', async (req, res) => {
+app.get('/api/phones/:id', async (req, res) => {
     try {
-        const phones = await Phone.findAll();
-        res.status(HTTP_STATUS_OK).json(phones);
+        const phone = await Phone.findByPk(req.params.id);
+        if (!phone) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Not found' });
+        }
+        res.status(HTTP_STATUS_OK).json(phone);
     } catch (error) {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
 });
+
+
+
 
 
 app.post('/api/users', async (req, res) => {
@@ -207,8 +264,7 @@ app.put('/api/users/:id', async (req, res) => {
         if (!user) {
             return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User not found' });
         }
-        user.set(updatedData);
-        await user.save();
+        await user.update(updatedData);
         res.status(HTTP_STATUS_OK).json(user);
     } catch (error) {
         console.error(error);
@@ -216,6 +272,21 @@ app.put('/api/users/:id', async (req, res) => {
     }
 });
 
+
+app.put('/api/phones/:id', async (req, res) => {
+    try {
+        const updatedData = req.body;
+        const phone = await Phone.findByPk(req.params.id);
+        if (!phone) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Phone not found' });
+        }
+        await phone.update(updatedData);
+        res.status(HTTP_STATUS_OK).json(phone);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 
