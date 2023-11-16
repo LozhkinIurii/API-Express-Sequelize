@@ -41,6 +41,10 @@ User.init({
     last: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    location: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     sequelize,
@@ -88,17 +92,6 @@ app.get('/api/users', async (req, res) => {
 });
 
 
-app.get('/api/phones', async (req, res) => {
-    try {
-        const phones = await Phone.findAll();
-        res.status(HTTP_STATUS_OK).json(phones);
-    } catch (error) {
-        console.error(error);
-        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
-    }
-});
-
-
 app.get('/api/users/search', async (req, res) => {
     const { op, include, model, ...conditions } = req.query;
     console.log(include, model);
@@ -129,6 +122,32 @@ app.get('/api/users/search', async (req, res) => {
 });
 
 
+app.get('/api/users/:id', async (req, res) => {
+    try {
+        const users = await User.findAll({
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(HTTP_STATUS_OK).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.get('/api/phones', async (req, res) => {
+    try {
+        const phones = await Phone.findAll();
+        res.status(HTTP_STATUS_OK).json(phones);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 app.post('/api/users', async (req, res) => {
     try {
         const newUser = await User.create(req.body);
@@ -151,18 +170,51 @@ app.post('/api/phones', async (req, res) => {
 
 app.patch('/api/users/:id', async (req, res) => {
     try {
-        const urlId = req.params.id;
-        await User.update(req.body, {
-            where: {
-                id: urlId
-            }
-        });
-        res.status(HTTP_STATUS_OK).json(updatedUser);
+        const updatedData = req.body;
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User not found' });
+        }
+        await user.update(updatedData);
+        res.status(HTTP_STATUS_OK).json(user);
     } catch (error) {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
-})
+});
+
+
+app.patch('/api/phones/:id', async (req, res) => {
+    try {
+        const updatedData = req.body;
+        const phone = await Phone.findByPk(req.params.id);
+        if (!phone) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Phone not found' });
+        }
+        await phone.update(updatedData);
+        res.status(HTTP_STATUS_OK).json(phone);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.put('/api/users/:id', async (req, res) => {
+    try {
+        const updatedData = req.body;
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User not found' });
+        }
+        user.set(updatedData);
+        await user.save();
+        res.status(HTTP_STATUS_OK).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 
