@@ -88,17 +88,38 @@ app.get('/api/users', async (req, res) => {
 });
 
 
+app.get('/api/phones', async (req, res) => {
+    try {
+        const phones = await Phone.findAll();
+        res.status(HTTP_STATUS_OK).json(phones);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 app.get('/api/users/search', async (req, res) => {
-    const { op, ...conditions } = req.query;
+    const { op, include, model, ...conditions } = req.query;
+    console.log(include, model);
     try {
         let whereConditions;
         if (op === 'and') {
             whereConditions = { [Op.and]: conditions };
         } else if (op === 'or') {
-            whereConditions = { [Op.or]: conditions }
+            whereConditions = { [Op.or]: conditions };
+        } else {
+            whereConditions = conditions;
         }
+
+        let includeModel = undefined;
+        if (include === 'true' && model) {
+            includeModel = { model: sequelize.model(model) }
+        }
+
         const users = await User.findAll({
-            where: whereConditions
+            where: whereConditions,
+            include: includeModel
         });
         res.status(HTTP_STATUS_OK).json(users);
     } catch (error) {
@@ -112,6 +133,16 @@ app.post('/api/users', async (req, res) => {
     try {
         const newUser = await User.create(req.body);
         res.status(HTTP_STATUS_CREATED).json(newUser);
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/api/phones', async (req, res) => {
+    try {
+        const newPhone = await Phone.create(req.body);
+        res.status(HTTP_STATUS_CREATED).json(newPhone);
     } catch (error) {
         console.error(error);
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });

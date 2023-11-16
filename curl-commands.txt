@@ -2,7 +2,7 @@ GET:
 curl 'http://localhost:8000/get?first=John0'
 
 GET (search):
-curl 'http://localhost:8000/api/users/search?first=some&op=and&last=thing'
+curl 'http://localhost:8000/api/users/search?first=some&op=and&last=thing&include=true&model=Phone'
 curl 'http://localhost:8000/api/users/search?first=some&op=or&last=thing'
 
 POST:
