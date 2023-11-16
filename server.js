@@ -93,14 +93,14 @@ app.get('/api/users', async (req, res) => {
 app.get('/api/users/search', async (req, res) => {
     const { op, ...conditions } = req.query;
     try {
-        let whereClause;
+        let whereConditions;
         if (op === 'and') {
-            whereClause = { [Op.and]: conditions };
+            whereConditions = { [Op.and]: conditions };
         } else if (op === 'or') {
-            whereClause = { [Op.or]: conditions }
+            whereConditions = { [Op.or]: conditions }
         }
         const users = await User.findAll({
-            where: whereClause
+            where: whereConditions
         });
         res.status(HTTP_STATUS_OK).json(users);
     } catch (error) {
