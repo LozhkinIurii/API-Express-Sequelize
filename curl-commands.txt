@@ -2,7 +2,8 @@ GET:
 curl 'http://localhost:8000/get?first=John0'
 
 GET (search):
-curl 'http://localhost:8000/api/users/search?first=some&last=thing'
+curl 'http://localhost:8000/api/users/search?first=some&op=and&last=thing'
+curl 'http://localhost:8000/api/users/search?first=some&op=or&last=thing'
 
 POST:
 curl -d '{"first": "Homer", "last": "Simpson"}' -H "Content-Type: application/json" -X POST http://localhost:8000/api/users
@@ -12,3 +13,8 @@ PUT:
 curl -d '{"first": "Ned", "last": "Flanders"}' -H "Content-Type: application/json" -X PUT http://localhost:8000/api/users/123
 
 PATCH:
+
+
+
+req.body  {key: value, key: value}
+req.query {key: value, key: value}

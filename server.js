@@ -91,16 +91,16 @@ app.get('/api/users', async (req, res) => {
 
 
 app.get('/api/users/search', async (req, res) => {
-    // const params = Object.entries(req.query);
-    // const keys = Object.keys(req.query);
-    // const values = Object.values(req.query);
-    const conditions = Object.entries(req.query).map(([key, value]) => ({ [key]: value }));   // Array of objects, each object has one key/value pair
-    console.log(conditions);
-    console.log(req.query);
+    const { op, ...conditions } = req.query;
     try {
+        let whereClause;
+        if (op === 'and') {
+            whereClause = { [Op.and]: conditions };
+        } else if (op === 'or') {
+            whereClause = { [Op.or]: conditions }
+        }
         const users = await User.findAll({
-            // attributes: [...keys],   // fields (columns to show)
-            where: req.query
+            where: whereClause
         });
         res.status(HTTP_STATUS_OK).json(users);
     } catch (error) {
