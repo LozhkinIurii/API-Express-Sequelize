@@ -1,1 +1,0 @@
-Associate tables when create them, and provide default records.

@@ -1,3 +1,5 @@
+EXAMPLES:
+
 GET:
 curl 'http://localhost:8000/get?first=John0'
 
@@ -14,7 +16,3 @@ curl -d '{"first": "Ned", "last": "Flanders"}' -H "Content-Type: application/jso
 
 PATCH:
 curl -d '{"first": "Ned", "last": "Flanders"}' -H "Content-Type: application/json" -X PATCH http://localhost:8000/api/users/1
-
-
-req.body  {key: value, key: value}
-req.query {key: value, key: value}

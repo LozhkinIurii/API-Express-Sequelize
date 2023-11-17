@@ -1,14 +1,7 @@
-// FILE: server.js
-//
-// curl --silent --include "http://localhost:8080/"
-// curl --silent --include "http://localhost:8080/search/last/Donovan"
-// curl --silent --include "http://localhost:8080/query?first=John&last=Doe"
-
 const { Sequelize, Model, DataTypes, Op } = require('sequelize');
 const express = require("express");
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('example.db');
 const hostname = "localhost";
 const port = 8000;
 const HTTP_STATUS_OK = 200;
@@ -22,7 +15,7 @@ const greetingMessage = {
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: './example.db'
+    storage: './database.db'
 });
 
 
@@ -373,6 +366,3 @@ app.use((req, res) => {	    // Any other request
 app.listen(port, () => {
     console.log(`Server is listening at http://${hostname}:${port}`)
 });
-
-
-
