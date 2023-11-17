@@ -111,13 +111,24 @@ app.get('/api/phones', async (req, res) => {
 
 app.get('/api/users/search', async (req, res) => {
     const { op, include, model, ...conditions } = req.query;
-    console.log(include, model);
     try {
         let whereConditions;
         if (op === 'and') {
             whereConditions = { [Op.and]: conditions };
         } else if (op === 'or') {
             whereConditions = { [Op.or]: conditions };
+        } else if (op === 'gt') {
+            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.gt]: parseInt(conditions[key])}}));
+            whereConditions = conds;
+        } else if (op === 'lt') {
+            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.lt]: parseInt(conditions[key])}}));
+            whereConditions = conds;
+        } else if (op === 'gte') {
+            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.gte]: parseInt(conditions[key])}}));
+            whereConditions = conds;
+        } else if (op === 'lte') {
+            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.lte]: parseInt(conditions[key])}}));
+            whereConditions = conds;
         } else {
             whereConditions = conditions;
         }
@@ -150,6 +161,14 @@ app.get('/api/phones/search', async (req, res) => {
             whereConditions = { [Op.and]: conditions };
         } else if (op === 'or') {
             whereConditions = { [Op.or]: conditions };
+        } else if (op === 'gt') {
+            whereConditions = { [Op.gt]: conditions };
+        } else if (op === 'lt') {
+            whereConditions = { [Op.lt]: conditions };
+        } else if (op === 'gte') {
+            whereConditions = { [Op.gte]: conditions };
+        } else if (op === 'lte') {
+            whereConditions = { [Op.lte]: conditions };
         } else {
             whereConditions = conditions;
         }
@@ -296,7 +315,7 @@ app.use((req, res) => {	    // Any other request
 });
 
 app.listen(port, () => {
-    console.log(`Example server listening at http://${hostname}:${port}`)
+    console.log(`Server is listening at http://${hostname}:${port}`)
 });
 
 
