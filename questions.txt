@@ -1,6 +1,1 @@
-searching with req.params (search/:last) or req.query (search?last=...);
-Sequelize searching with multiple criterias: how to recognize AND/OR in url query or should I use different routes? USE &op=and&" / &op=or&
-how to make queries for each possible situation? (seems impossible)  MAKE SIMPLE
-domain constraint checks for Sequelize.  PK FK (because need to bind second table)
-for updating PUT or PATCH?  BOTH
-PATCH with req.params or (/:id) or not? (curl with -d {} or parameters in the end of url);  ID ENOUGH
+Associate tables when create them, and provide default records.

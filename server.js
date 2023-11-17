@@ -110,7 +110,7 @@ app.get('/api/phones', async (req, res) => {
 
 
 app.get('/api/users/search', async (req, res) => {
-    const { op, include, model, ...conditions } = req.query;
+    const { op, include, ...conditions } = req.query;
     try {
         let whereConditions;
         if (op === 'and') {
@@ -124,7 +124,7 @@ app.get('/api/users/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.gt]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else if (op === 'lt') {
@@ -132,7 +132,7 @@ app.get('/api/users/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.lt]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else if (op === 'gte') {
@@ -140,7 +140,7 @@ app.get('/api/users/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.gte]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else if (op === 'lte') {
@@ -148,7 +148,7 @@ app.get('/api/users/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.lte]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else {
@@ -156,10 +156,14 @@ app.get('/api/users/search', async (req, res) => {
         }
 
         let includeModel = undefined;
-        if (include === 'true' && model) {
-            includeModel = { model: sequelize.model(model) }
+        if (include) {
+            try {
+                includeModel = sequelize.model(include);
+            }
+            catch {
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'No Model with such name' });
+            }
         }
-
         const users = await User.findAll({
             where: whereConditions,
             include: includeModel
@@ -176,7 +180,7 @@ app.get('/api/users/search', async (req, res) => {
 
 
 app.get('/api/phones/search', async (req, res) => {
-    const { op, include, model, ...conditions } = req.query;
+    const { op, include, ...conditions } = req.query;
     try {
         let whereConditions;
         if (op === 'and') {
@@ -190,7 +194,7 @@ app.get('/api/phones/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.gt]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else if (op === 'lt') {
@@ -198,7 +202,7 @@ app.get('/api/phones/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.lt]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else if (op === 'gte') {
@@ -206,7 +210,7 @@ app.get('/api/phones/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.gte]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else if (op === 'lte') {
@@ -214,7 +218,7 @@ app.get('/api/phones/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({[key]: {[Op.lte]: parseFloat(conditions[key])}}));
+            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
             whereConditions = conds;
 
         } else {
@@ -222,10 +226,14 @@ app.get('/api/phones/search', async (req, res) => {
         }
 
         let includeModel = undefined;
-        if (include === 'true' && model) {
-            includeModel = { model: sequelize.model(model) }
+        if (include) {
+            try {
+                includeModel = sequelize.model(include);
+            }
+            catch {
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'No Model with such name' });
+            }
         }
-
         const phones = await Phone.findAll({
             where: whereConditions,
             include: includeModel
