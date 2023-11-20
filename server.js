@@ -1,7 +1,6 @@
 const { Sequelize, Model, DataTypes, Op } = require('sequelize');
 const express = require("express");
 const app = express();
-const sqlite3 = require('sqlite3').verbose();
 const hostname = "localhost";
 const port = 8000;
 const HTTP_STATUS_OK = 200;
@@ -113,7 +112,7 @@ app.get('/api/users/search', async (req, res) => {
             whereConditions = { [Op.or]: conditions };
 
         } else if (op === 'gt') {
-            const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
+            const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));  // checks if value is number
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
@@ -148,8 +147,8 @@ app.get('/api/users/search', async (req, res) => {
             whereConditions = conditions;
         }
 
-        let includeModel = undefined;
-        if (include) {
+        let includeModel = undefined;   // Table to be JOINed
+        if (include) {  // check if model exists
             try {
                 includeModel = sequelize.model(include);
             }
@@ -268,8 +267,6 @@ app.get('/api/phones/:id', async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
 });
-
-
 
 
 
