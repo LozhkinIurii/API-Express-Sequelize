@@ -355,6 +355,21 @@ app.put('/api/phones/:id', async (req, res) => {
 
 
 
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        const newUser = await User.destroy({
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(HTTP_STATUS_OK).json({message: `User with id: ${req.params.id} deleted successfully`});
+    } catch (error) {
+        console.error(error);
+        res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User with this id does not exist' });
+    }
+});
+
+
 app.use((req, res) => {	    // Any other request
     res.setHeader('Content-Type', 'application/json');
     res.status(HTTP_STATUS_NOT_EXIST).json({});

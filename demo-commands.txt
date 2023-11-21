@@ -12,3 +12,6 @@ curl -d '{"first": "Max", "last": "Payne", "location": "New York"}' -H "Content-
 
 PATCH:
 curl -d '{"first": "Ned", "last": "Flanders"}' -H "Content-Type: application/json" -X PATCH http://localhost:8000/api/users/1
+
+DELETE:
+curl -X DELETE http://localhost:8000/api/users/1
