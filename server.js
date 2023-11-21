@@ -357,17 +357,42 @@ app.put('/api/phones/:id', async (req, res) => {
 
 app.delete('/api/users/:id', async (req, res) => {
     try {
-        const newUser = await User.destroy({
+        const deletedUser = await User.destroy({
             where: {
                 id: req.params.id
             }
         });
-        res.status(HTTP_STATUS_OK).json({message: `User with id: ${req.params.id} deleted successfully`});
+        if (deletedUser === 0) {
+            res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User with this id does not exist' });
+        } else {
+            res.status(HTTP_STATUS_OK).json({ message: `User with id: ${req.params.id} deleted successfully` });
+        }
     } catch (error) {
         console.error(error);
-        res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User with this id does not exist' });
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Something went wrong' });
     }
 });
+
+
+
+app.delete('/api/phones/:id', async (req, res) => {
+    try {
+        const deletedPhone = await Phone.destroy({
+            where: {
+                id: req.params.id
+            }
+        });
+        if (deletedPhone === 0) {
+            res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Phone with this id does not exist' });
+        } else {
+            res.status(HTTP_STATUS_OK).json({ message: `Phone with id: ${req.params.id} deleted successfully` });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Something went wrong' });
+    }
+});
+
 
 
 app.use((req, res) => {	    // Any other request
