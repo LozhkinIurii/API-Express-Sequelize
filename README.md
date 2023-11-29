@@ -1,5 +1,5 @@
 **Author:** Iurii Lozhkin<br>
-**Date**: 20.11.2023
+**Date**: 22.11.2023
 
 ### Instructions to setup and run:
 1. Run in the terminal _npm install_ to install all necessary modules.

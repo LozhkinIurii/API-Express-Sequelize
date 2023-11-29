@@ -56,7 +56,7 @@ const Phone = sequelize.define('Phone', {
     timestamps: false
 });
 
-
+// Association between tables
 User.hasMany(Phone);
 Phone.belongsTo(User);
 
@@ -116,32 +116,28 @@ app.get('/api/users/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));  // array of objects
 
         } else if (op === 'lt') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'gte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'lte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
 
         } else {
             whereConditions = conditions;
@@ -186,32 +182,28 @@ app.get('/api/phones/search', async (req, res) => {
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'lt') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'gte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'lte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
                 return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
             }
-            let conds = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
-            whereConditions = conds;
+            whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
 
         } else {
             whereConditions = conditions;
@@ -329,7 +321,8 @@ app.put('/api/users/:id', async (req, res) => {
         if (!user) {
             return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'User not found' });
         }
-        await user.update(updatedData);
+        user.set(updatedData);
+        await user.save();
         res.status(HTTP_STATUS_OK).json(user);
     } catch (error) {
         console.error(error);
@@ -345,7 +338,8 @@ app.put('/api/phones/:id', async (req, res) => {
         if (!phone) {
             return res.status(HTTP_STATUS_NOT_EXIST).json({ error: 'Phone not found' });
         }
-        await phone.update(updatedData);
+        phone.set(updatedData);
+        await phone.save();
         res.status(HTTP_STATUS_OK).json(phone);
     } catch (error) {
         console.error(error);

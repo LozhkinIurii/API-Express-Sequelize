@@ -6,7 +6,6 @@ curl 'http://localhost:8000/api/users/search?op=gte&id=2'
 POST:
 curl -d '{"first": "Homer", "last": "Simpson", "location": "Springfield"}' -H "Content-Type: application/json" -X POST http://localhost:8000/api/users
 
-
 PUT:
 curl -d '{"first": "Max", "last": "Payne", "location": "New York"}' -H "Content-Type: application/json" -X PUT http://localhost:8000/api/users/1
 
