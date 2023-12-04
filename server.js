@@ -114,28 +114,28 @@ app.get('/api/users/search', async (req, res) => {
         } else if (op === 'gt') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));  // checks if value is number
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));  // array of objects
 
         } else if (op === 'lt') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'gte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'lte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
 
@@ -180,28 +180,28 @@ app.get('/api/phones/search', async (req, res) => {
         } else if (op === 'gt') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gt]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'lt') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lt]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'gte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.gte]: parseFloat(conditions[key]) } }));
 
         } else if (op === 'lte') {
             const isValid = Object.keys(conditions).every(key => !isNaN(parseFloat(conditions[key])));
             if (!isValid) {
-                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Invalid data type provided' });
+                return res.status(HTTP_STATUS_BADREQ).json({ error: 'Cannot compare values of String data type' });
             }
             whereConditions = Object.keys(conditions).map(key => ({ [key]: { [Op.lte]: parseFloat(conditions[key]) } }));
 
@@ -391,7 +391,7 @@ app.delete('/api/phones/:id', async (req, res) => {
 
 app.use((req, res) => {	    // Any other request
     res.setHeader('Content-Type', 'application/json');
-    res.status(HTTP_STATUS_NOT_EXIST).json({});
+    res.status(HTTP_STATUS_NOT_EXIST).json({ Error: "Not exist"});
 });
 
 app.listen(port, () => {
