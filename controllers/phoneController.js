@@ -66,7 +66,7 @@ async function findPhones(req, res) {
         }
 
         let includeModel = undefined;
-        if (include === 'User') {
+        if (include.toLowerCase() === 'user') {
             try {
                 includeModel = User;
             }

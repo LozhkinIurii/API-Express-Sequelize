@@ -66,7 +66,7 @@ async function findUsers(req, res) {
         }
 
         let includeModel = undefined;   // Table to be JOINed
-        if (include === 'Phone') {  // check if model exists
+        if (include.toLowerCase() === 'phone') {  // check if model exists
             try {
                 includeModel = Phone;
             }
